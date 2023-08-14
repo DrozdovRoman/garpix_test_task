@@ -2,7 +2,7 @@ from garpix_user.models import GarpixUser
 
 
 class User(GarpixUser):
-    pass
+    USERNAME_FIELDS = ('email', )
 
     class Meta:
         verbose_name = 'Пользователь'
