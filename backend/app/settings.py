@@ -1,5 +1,7 @@
 from garpixcms.settings import *  # noqa
 
+API_URL = 'api/v1'
+
 INSTALLED_APPS += [  # noqa
     'api',
 ]
@@ -10,7 +12,6 @@ MIGRATION_MODULES.update({  # noqa:F405
 
 GARPIX_USER.update({
     'USE_REGISTRATION': True,
-    'REGISTRATION_SERIALIZER': 'app.serializers.RegistrationCustSerializer',
     'MIN_LENGTH_PASSWORD': 8,
     'MIN_DIGITS_PASSWORD': 2,
     'MIN_CHARS_PASSWORD': 2,
@@ -21,6 +22,9 @@ GARPIX_USER.update({
     'JWT_SERIALIZER': 'garpix_user.serializers.JWTDataSerializer',
 
 })
+
+WHITELISTED_IMAGE_TYPES = ['png', 'jpeg', 'jpg']
+UPLOAD_FILE_MAX_SIZE = 5 * 1024 * 1024
 
 
 

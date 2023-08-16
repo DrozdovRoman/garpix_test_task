@@ -1,5 +1,5 @@
 from garpixcms.urls import *  # noqa
 
 urlpatterns = [
-    # path('api/', include('api.urls', namespace='api')),
+    path(f'{settings.API_URL}/', include('api.urls')),
 ] + urlpatterns  # noqa

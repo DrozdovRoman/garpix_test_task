@@ -5,4 +5,4 @@ from django.contrib.admin import ModelAdmin
 
 @admin.register(Album)
 class AlbumAdmin(ModelAdmin):
-    list_display = ('id', 'author', 'title')
+    list_display = ('id', 'author', 'title', 'views', 'created_at')
