@@ -33,6 +33,7 @@ class Album(TimestampMixin, models.Model):
         upload_to=get_file_path,
         null=True,
         blank=True,
+        max_length=200,
         verbose_name='Миниатюрное изображение'
     )
 
@@ -48,11 +49,11 @@ class Album(TimestampMixin, models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
 
         if self.image:
-            create_thumbnail(self.image.path)
-            # super().save(*args, **kwargs)
+            thumbnail_path = self.create_thumbnail(self.image)
+            self.thumbnail.name = thumbnail_path
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_top_ten_images(self):
@@ -77,22 +78,29 @@ class Album(TimestampMixin, models.Model):
         self.views += 1
         self.save()
 
+    @staticmethod
+    def create_thumbnail(image):
+        try:
+            file, ext = os.path.splitext(image.name)
+            max_size = 150
+            with Image.open(image) as im:
+                width, height = im.size
+                if width > height:
+                    thumbnail_width = max_size
+                    thumbnail_height = int((height / width) * max_size)
+                else:
+                    thumbnail_width = int((width / height) * max_size)
+                    thumbnail_height = max_size
+                size = (thumbnail_width, thumbnail_height)
 
-def create_thumbnail(image_path):
-    image = Image.open(image_path)
+                im.thumbnail(size)
+                thumbnail_file_name = f"{str(os.path.basename(file)).lower()}-thumbnail.webp"
+                thumbnail_path = get_file_path(Album, thumbnail_file_name)
 
-    max_thumbnail_size = 150
+                im.save(os.path.join(settings.MEDIA_ROOT, thumbnail_path), "WebP")
 
-    width, height = image.size
+            return thumbnail_path
 
-    if width > height:
-        thumbnail_size = (max_thumbnail_size, int(height * (max_thumbnail_size / width)))
-    else:
-        thumbnail_size = (int(width * (max_thumbnail_size / height)), max_thumbnail_size)
-
-    image.thumbnail(thumbnail_size)
-    thumbnail_path = f'{image_path.split(".")[:-1]}_thumbnail.{image_path.split(".")[-1]}'
-    image.save(thumbnail_path, format='WebP')
-    print(thumbnail_path)
-    # return thumbnail_path
-
+        except Exception as e:
+            print(f"Error creating thumbnail: {e}")
+            return None
