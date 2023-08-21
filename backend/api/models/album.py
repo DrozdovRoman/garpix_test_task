@@ -1,3 +1,6 @@
+import sys
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from garpix_utils.file.file_field import get_file_path
 from ..mixins import TimestampMixin
@@ -6,6 +9,7 @@ from PIL import Image
 from django.core.validators import FileExtensionValidator
 from ..validator import FileSizeValidator
 import os
+from io import BytesIO
 
 
 class Album(TimestampMixin, models.Model):
@@ -48,12 +52,26 @@ class Album(TimestampMixin, models.Model):
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
+    def save(self,*args, **kwargs):
+        output_thumb = BytesIO()
+        img = Image.open(self.image)
+        img_name, ext = os.path.splitext(self.image.name)
+        output_size = self.thumbnail_size(img.size)
 
-        if self.image:
-            thumbnail_path = self.create_thumbnail(self.image)
-            self.thumbnail.name = thumbnail_path
+        img.thumbnail(output_size)
+        img.save(output_thumb, format='WebP')
+
+        self.thumbnail = InMemoryUploadedFile(
+            output_thumb,
+            'ImageField',
+            f"{img_name}_thumb.webp",
+            'image/webp',
+            sys.getsizeof(output_thumb),
+            None
+        )
+
         super().save(*args, **kwargs)
+
 
     @staticmethod
     def get_top_ten_images(self):
@@ -79,28 +97,20 @@ class Album(TimestampMixin, models.Model):
         self.save()
 
     @staticmethod
-    def create_thumbnail(image):
+    def thumbnail_size(image_size):
+        max_size = 150
+        width, height = image_size
         try:
-            file, ext = os.path.splitext(image.name)
-            max_size = 150
-            with Image.open(image) as im:
-                width, height = im.size
-                if width > height:
-                    thumbnail_width = max_size
-                    thumbnail_height = int((height / width) * max_size)
-                else:
-                    thumbnail_width = int((width / height) * max_size)
-                    thumbnail_height = max_size
-                size = (thumbnail_width, thumbnail_height)
+            if width > height:
+                thumbnail_width = max_size
+                thumbnail_height = int((height / width) * max_size)
+            else:
+                thumbnail_width = int((width / height) * max_size)
+                thumbnail_height = max_size
+            thumbnail_size = (thumbnail_width, thumbnail_height)
 
-                im.thumbnail(size)
-                thumbnail_file_name = f"{str(os.path.basename(file)).lower()}-thumbnail.webp"
-                thumbnail_path = get_file_path(Album, thumbnail_file_name)
-
-                im.save(os.path.join(settings.MEDIA_ROOT, thumbnail_path), "WebP")
-
-            return thumbnail_path
+            return thumbnail_size
 
         except Exception as e:
-            print(f"Error creating thumbnail: {e}")
-            return None
+                print(f"Error creating thumbnail: {e}")
+                return None

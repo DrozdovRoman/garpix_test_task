@@ -1,1 +1,1 @@
-from .album import AlbumCreateSerializer, AlbumSuccesfullCreateSerializer
+from .album import AlbumCreateSerializer, AlbumSerializer, AlbumUpdateTitleSerializer
