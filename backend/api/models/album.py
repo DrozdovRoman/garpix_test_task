@@ -10,7 +10,7 @@ from django.core.validators import FileExtensionValidator
 from ..validator import FileSizeValidator
 import os
 from io import BytesIO
-from django.db.models import Q, F, Value
+
 
 class Album(TimestampMixin, models.Model):
     title = models.CharField(
@@ -73,12 +73,11 @@ class Album(TimestampMixin, models.Model):
         super().save(*args, **kwargs)
 
     @staticmethod
-    def get_top_ten_images(username=None):
-        if username:
-            top_photos = Album.objects.filter(author__username=username).order_by('-views')[:10]
-        else:
-            top_photos = Album.objects.order_by('-views')[:10]
-        return top_photos
+    def get_top_three_images_author():
+        top_albums = Album.objects.order_by('-views')[:3]
+        top_authors = list(set(image.author for image in top_albums))
+
+        return top_authors
 
     def get_title(self):
         return self.title

@@ -26,5 +26,12 @@ GARPIX_USER.update({
 WHITELISTED_IMAGE_TYPES = ['png', 'jpeg', 'jpg']
 UPLOAD_FILE_MAX_SIZE = 5 * 1024 * 1024
 
+MOST_VIEWED_ALBUM_EVENT = 1
 
+NOTIFY_EVENTS = {
+    MOST_VIEWED_ALBUM_EVENT: {
+        'title': 'Топ-3 самых просматриваемых фотографий на сайте'
+    }
+}
 
+CHOICES_NOTIFY_EVENT = [(k, v['title']) for k, v in NOTIFY_EVENTS.items()]
