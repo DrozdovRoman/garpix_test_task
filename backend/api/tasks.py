@@ -11,20 +11,23 @@ celery_app = import_string(settings.GARPIX_NOTIFY_CELERY_SETTINGS)
 
 @celery_app.task
 def periodic_top_views_email_notification():
-    authors = Album.get_top_three_images_author()
-    for author in authors:
-        if author.email:
-
-
+    albums = Album.get_top_images(count=3)
+    for album in albums:
+        if album.author.email:
+            Notify.send(
+                settings.MOST_VIEWED_ALBUM_EVENT,
+                {'album': album},
+                user=album.author
+            )
+            print('Good job')
         else:
-            print(None)
+            print('Bad job')
 
 
 celery_app.conf.beat_schedule.update({
     'Test_task': {
         'task': 'api.tasks.periodic_top_views_email_notification',
-        # 'schedule': crontab(minute=0, hour=0, day_of_month=1, month_of_year='*'),
-        'schedule': 5,
+        'schedule': crontab(day_of_month='1'),
     }
 })
 celery_app.conf.timezone = 'UTC'
