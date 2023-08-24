@@ -73,8 +73,12 @@ class Album(TimestampMixin, models.Model):
         super().save(*args, **kwargs)
 
     @staticmethod
-    def get_top_images(count=10):
-        top_albums = Album.objects.order_by('-views')[:count]
+    def get_top_images(count=10, author=None):
+        if author:
+            top_albums = Album.objects.filter(author=author).order_by('-views')[:count]
+        else:
+            top_albums = Album.objects.order_by('-views')[:count]
+
         return top_albums
 
     def get_title(self):

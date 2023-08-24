@@ -54,14 +54,3 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
         serializer.save(**previous_fields)
         instance.refresh_from_db()
-
-    @action(detail=False, methods=['GET'],
-            permission_classes=[IsAuthenticated],)
-    def top_ten_images(self, request):
-        username = request.query_params.get('username')
-        if username:
-            top_albums = Album.get_top_ten_images(username)
-        else:
-            top_albums = Album.get_top_ten_images()
-        serializer = AlbumSerializer(top_albums, many=True)
-        return Response(serializer.data)
