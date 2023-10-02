@@ -25,7 +25,7 @@ class TestAlbumApi:
 
         test_data = response.json()
 
-        assert type(test_data) == list
+        assert type(test_data) is list
 
         assert len(test_data) == Album.objects.count()
 
@@ -63,7 +63,7 @@ class TestAlbumApi:
         assert response.status_code == 201
 
         test_data = response.json()
-        assert type(test_data) == dict
+        assert type(test_data) is dict
 
         assert test_data.get('title') == data['title']
 

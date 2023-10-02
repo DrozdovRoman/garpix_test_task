@@ -6,4 +6,3 @@ from django.contrib.auth.admin import UserAdmin
 @admin.register(User)
 class UserAdmin(UserAdmin):
     pass
-

@@ -1,15 +1,11 @@
+import os
+import cv2
+from django.conf import settings
 from django.db import models
 from ..mixins import TimestampMixin
 from ..models import Album
 from garpix_utils.file.file_field import get_file_path
 from ..utils import calculate_hash_string
-
-import os
-import cv2
-
-from io import BytesIO
-from django.core.files import File
-from django.conf import settings
 
 
 class TopAlbums(TimestampMixin, models.Model):
@@ -47,7 +43,10 @@ class TopAlbums(TimestampMixin, models.Model):
 
             fourcc = cv2.VideoWriter_fourcc(*"mp4v")
             video = cv2.VideoWriter(
-                filename=path, fourcc=fourcc, fps=0.5, frameSize=image_quality
+                filename=path,
+                fourcc=fourcc,
+                fps=0.5,
+                frameSize=image_quality
             )
 
             for image in image_files:
@@ -55,11 +54,12 @@ class TopAlbums(TimestampMixin, models.Model):
                 frame = cv2.resize(frame, dsize=image_quality)
                 video.write(frame)
             video.release()
-            top_albums = TopAlbums.objects.create(hash_key=hash, webm_file=path)
-            print('new')
+            top_albums = TopAlbums.objects.create(
+                hash_key=hash,
+                webm_file=get_file_path(TopAlbums, f'{hash}.mp4')
+            )
 
         else:
             top_albums = TopAlbums.objects.filter(hash_key=hash).first()
-            print('exist')
 
         return top_albums

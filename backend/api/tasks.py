@@ -19,9 +19,6 @@ def periodic_top_views_email_notification():
                 {'album': album},
                 user=album.author
             )
-            print('Good job')
-        else:
-            print('Bad job')
 
 
 celery_app.conf.beat_schedule.update({

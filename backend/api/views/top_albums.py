@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import TopAlbums, Album
+from ..models import TopAlbums
 from ..serializers import TopAlbumsSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 class TopAlbumsView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, format=None):
+    def get(self, request):
         User = get_user_model()
         user_id = request.query_params.get('user_id')
 

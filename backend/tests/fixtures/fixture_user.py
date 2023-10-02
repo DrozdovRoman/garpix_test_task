@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def user(django_user_model):
     data_user = {
@@ -11,6 +12,7 @@ def user(django_user_model):
     }
     return django_user_model.objects.create_user(**data_user)
 
+
 @pytest.fixture
 def another_user(django_user_model):
     data_user = {
@@ -21,6 +23,7 @@ def another_user(django_user_model):
         'last_name': 'User',
     }
     return django_user_model.objects.create_user(**data_user)
+
 
 @pytest.fixture
 def user_client(user):

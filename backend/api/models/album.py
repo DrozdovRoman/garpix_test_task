@@ -52,7 +52,7 @@ class Album(TimestampMixin, models.Model):
     def __str__(self):
         return self.title
 
-    def save(self,*args, **kwargs):
+    def save(self, *args, **kwargs):
         output_thumb = BytesIO()
         img = Image.open(self.image)
         img_name, ext = os.path.splitext(self.image.name)
